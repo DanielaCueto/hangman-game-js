@@ -4,7 +4,23 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/main.css" />
     <title>Hangman game</title>
   </head>
-  <body></body>
+  <body>
+    <label for="word">
+      Guess:
+      <span class="js-word"></span>
+    </label>
+    <p class="js-inputWord"></p>
+    <div class="keyBoard"></div>
+    <div>
+      <span>Attempts: <span>5</span></span>
+    </div>
+    <div>
+      <span class="not-word">Is not in the word: </span>
+    </div>
+    <button class="js-reset">Reset</button>
+    <script type="text/javascript" src="./js/main.js"></script>
+  </body>
 </html>
