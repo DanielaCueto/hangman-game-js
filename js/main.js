@@ -5,10 +5,24 @@ console.log("helloWOrld");
 //variables from html:
 
 let userWord = document.querySelector(".js-word");
-let secretWord = ""; //palabra generada por el fetch. Declarada pero no asignada
-let triedCharacters = []; //array donde almaceno todas los caracteres intentados hasta ahora
-let notInTheWord = [];
-let pressCharacter;
+
+//palabra generada por el fetch. Declarada pero no asignada
+let secretWord = "";
+function setSecretWord(strWord) {
+  secretWord = strWord.toLowerCase();
+  secretWord = removeAccents(secretWord);
+  displayCensoredWord();
+  console.log(secretWord);
+}
+//array donde almaceno todas los caracteres intentados hasta ahora
+let triedCharacters = [];
+//funcion que va a actualizar el valor de triedCharacters y redibuja todo lo que dependa de ese valor:
+function setTriedCharacters(pressCharacter) {
+  triedCharacters.push(pressCharacter);
+  console.log(triedCharacters);
+  displayCensoredWord();
+  displayNotInWord();
+}
 
 // función que se encarga de hacer el fetch para la palabra random.
 function getRandomWord() {
@@ -17,9 +31,7 @@ function getRandomWord() {
     .then((words) => {
       //tengo que sacar la palabra del array. Uso su indice. esta en el indice 0 segun la api
       const strWord = words[0];
-      secretWord = strWord.toLowerCase();
-      displayCensoredWord();
-      console.log(strWord);
+      setSecretWord(strWord);
       return strWord;
     });
 }
@@ -29,7 +41,7 @@ function displayCensoredWord() {
   let result = ``;
   for (let i = 0; i < secretWord.length; i++) {
     const character = secretWord[i];
-    console.log(character);
+    //console.log(character);
     if (triedCharacters.includes(character)) {
       result += `${character}  `;
     } else {
@@ -39,40 +51,43 @@ function displayCensoredWord() {
   userWord.textContent = result;
 }
 
-getRandomWord();
-
-/* function userInput() {
-  const key = userWord.value;
-  console.log(key);
-  document.querySelector(".js-inputWord").innerHTML = key;
-} */
-
 function handleKey(ev) {
   console.log(ev);
   let pressed = ev.target;
-  pressCharacter = pressed.innerHTML.trim();
+  let pressCharacter = pressed.innerHTML.trim();
   console.log(pressCharacter);
-  triedCharacters.push(pressCharacter);
-  console.log(triedCharacters);
-  displayCensoredWord();
-  document.querySelector(".js-inputWord").innerHTML += pressCharacter;
+  setTriedCharacters(pressCharacter);
+  //document.querySelector(".js-inputWord").innerHTML += pressCharacter;
   console.log(pressed);
-  isInTheWord();
 }
 
-function isInTheWord() {
-  if (!secretWord.includes(pressCharacter)) {
-    notInTheWord.push(pressCharacter);
-    document.querySelector(
-      ".not-word"
-    ).innerHTML = `Is not in the word:  ${notInTheWord.join(", ")}`;
+function displayNotInWord() {
+  let notInTheWord = [];
+  for (let character of triedCharacters) {
+    if (!secretWord.includes(character)) {
+      notInTheWord.push(character);
+    }
+  }
+  document.querySelector(
+    ".not-word"
+  ).innerHTML = `Is not in the word:  ${notInTheWord.join(", ")}`;
+
+  let attempts = 7;
+  attempts -= notInTheWord.length;
+  const displayAttempt = document.querySelector(".attempts");
+  displayAttempt.innerHTML = `${attempts}`;
+  if (attempts === 0) {
+    attempts = 0;
+    window.alert("SORRY, YOU LOST");
   }
 }
+
+//Función que genera el teclado virtual
 function generateKeyBoard() {
   const keyBoardLetter = "abcdefghijklmnopqrstuvwxyz";
   keyBoardLetter.split("");
   for (let letter of keyBoardLetter) {
-    console.log(letter);
+    //console.log(letter);
     document.querySelector(
       ".keyBoard"
     ).innerHTML += `<button class="button">${letter}</button>`;
@@ -85,6 +100,16 @@ function generateKeyBoard() {
   //console.log(keyBoardLetter);
 }
 
-generateKeyBoard();
+//función que remueve los acentos de la palabra secreta
+function removeAccents(text) {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
 
-//userWord.addEventListener("keyup", userInput);
+generateKeyBoard();
+getRandomWord();
+
+//QUE FALTA:
+// reducir el número de intentos cuando la letra no esta en la secretword.
+
+//Cuando este a 0 --> LOST THE GAME
+//Cuando acierte la palabra --> YOU WON!! (ventana modal quizas?)
