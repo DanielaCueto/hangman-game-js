@@ -56,8 +56,11 @@ function handleKey(ev) {
   let pressed = ev.target;
   let pressCharacter = pressed.innerHTML.trim();
   console.log(pressCharacter);
+
+  if (triedCharacters.includes(pressCharacter)) {
+    return;
+  }
   setTriedCharacters(pressCharacter);
-  //document.querySelector(".js-inputWord").innerHTML += pressCharacter;
   console.log(pressed);
 }
 
@@ -68,17 +71,17 @@ function displayNotInWord() {
       notInTheWord.push(character);
     }
   }
+
   document.querySelector(
     ".not-word"
   ).innerHTML = `Is not in the word:  ${notInTheWord.join(", ")}`;
-
   let attempts = 7;
   attempts -= notInTheWord.length;
   const displayAttempt = document.querySelector(".attempts");
   displayAttempt.innerHTML = `${attempts}`;
   if (attempts === 0) {
-    attempts = 0;
-    window.alert("SORRY, YOU LOST");
+    setTimeout(() => alert("SORRY YOU LOST"), 0);
+    //attempts = 0;
   }
 }
 
@@ -91,13 +94,20 @@ function generateKeyBoard() {
     document.querySelector(
       ".keyBoard"
     ).innerHTML += `<button class="button">${letter}</button>`;
-    // - añadir un eventListener en cada tecla del teclado. - Que la letra de la tecla se pinte en el input.
   }
-  const buttons = document.querySelectorAll(".button");
-  for (let button of buttons) {
-    button.addEventListener("click", handleKey);
-  }
+  // - añadir un eventListener en cada tecla del teclado. - Que la letra de la tecla se pinte en el input.
+  assignEventEveryButton();
+
   //console.log(keyBoardLetter);
+}
+
+function assignEventEveryButton() {
+  const buttons = document.querySelectorAll(".button");
+  for (let i = 0; i < buttons.length; i++) {
+    console.log(i);
+    const buttonClicked = buttons[i];
+    buttonClicked.addEventListener("click", handleKey);
+  }
 }
 
 //función que remueve los acentos de la palabra secreta
@@ -109,7 +119,7 @@ generateKeyBoard();
 getRandomWord();
 
 //QUE FALTA:
-// reducir el número de intentos cuando la letra no esta en la secretword.
+// reducir el número de intentos cuando la letra no esta en la secretword.DONE
 
-//Cuando este a 0 --> LOST THE GAME
+//Cuando este a 0 --> LOST THE GAME DONE
 //Cuando acierte la palabra --> YOU WON!! (ventana modal quizas?)
