@@ -1,7 +1,5 @@
 "use strict";
 
-console.log("helloWOrld");
-
 //variables from html:
 
 let userWord = document.querySelector(".js-word");
@@ -16,10 +14,14 @@ function setSecretWord(strWord) {
 }
 //array donde almaceno todas los caracteres intentados hasta ahora
 let triedCharacters = [];
-//funcion que va a actualizar el valor de triedCharacters y redibuja todo lo que dependa de ese valor:
-function setTriedCharacters(pressCharacter) {
-  triedCharacters.push(pressCharacter);
-  console.log(triedCharacters);
+//función (de estado) que añade el nuevo character al tried character
+function addTriedCharacters(pressCharacter) {
+  setTriedCharacters([...triedCharacters, pressCharacter]);
+}
+
+//función que remplaza el triedCharacter anterior por el nuevo
+function setTriedCharacters(newTriedCharacters) {
+  triedCharacters = newTriedCharacters;
   displayCensoredWord();
   displayNotInWord();
 }
@@ -56,35 +58,62 @@ function handleKey(ev) {
   let pressed = ev.target;
   let pressCharacter = pressed.innerHTML.trim();
   console.log(pressCharacter);
-
+  //Si el triedCharacter ya tiene el pressCharacter, que no lo incluya.
   if (triedCharacters.includes(pressCharacter)) {
     return;
   }
-  setTriedCharacters(pressCharacter);
+  addTriedCharacters(pressCharacter);
   console.log(pressed);
+  if (getAttemptsLeft() === 0) {
+    setTimeout(() => {
+      alert("SORRY YOU LOST 😣");
+      reset();
+    }, 0);
+    //window.location.reload();
+  } else if (isWordCompleted()) {
+    setTimeout(() => {
+      alert("CONGRATULATIONS!! YOU WON 🥳");
+      reset();
+    }, 0);
+  }
+}
+
+function isWordCompleted() {
+  for (let character of secretWord) {
+    if (triedCharacters.includes(character)) {
+      continue;
+    } else {
+      return false;
+    }
+  }
+  return true;
 }
 
 function displayNotInWord() {
+  const notInTheWord = getNotInTheWord();
+  document.querySelector(
+    ".not-word"
+  ).innerHTML = `Is not in the word:  ${notInTheWord.join(", ")}`;
+  const attempts = getAttemptsLeft();
+  const displayAttempt = document.querySelector(".attempts");
+  displayAttempt.innerHTML = `${attempts}`;
+}
+
+function getAttemptsLeft() {
+  let attempts = 7;
+  attempts -= getNotInTheWord().length;
+  return attempts;
+}
+
+function getNotInTheWord() {
   let notInTheWord = [];
   for (let character of triedCharacters) {
     if (!secretWord.includes(character)) {
       notInTheWord.push(character);
     }
   }
-
-  document.querySelector(
-    ".not-word"
-  ).innerHTML = `Is not in the word:  ${notInTheWord.join(", ")}`;
-  let attempts = 7;
-  attempts -= notInTheWord.length;
-  const displayAttempt = document.querySelector(".attempts");
-  displayAttempt.innerHTML = `${attempts}`;
-  if (attempts === 0) {
-    setTimeout(() => alert("SORRY YOU LOST"), 0);
-    //attempts = 0;
-  }
+  return notInTheWord;
 }
-
 //Función que genera el teclado virtual
 function generateKeyBoard() {
   const keyBoardLetter = "abcdefghijklmnopqrstuvwxyz";
@@ -118,6 +147,15 @@ function removeAccents(text) {
 generateKeyBoard();
 getRandomWord();
 
+const btnReset = document.querySelector(".js-reset");
+console.log(btnReset);
+btnReset.addEventListener("click", reset);
+
+function reset() {
+  setSecretWord("");
+  setTriedCharacters([]);
+  getRandomWord();
+}
 //QUE FALTA:
 // reducir el número de intentos cuando la letra no esta en la secretword.DONE
 
