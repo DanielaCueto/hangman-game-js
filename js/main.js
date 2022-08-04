@@ -100,7 +100,7 @@ function displayNotInWord() {
 }
 
 function getAttemptsLeft() {
-  let attempts = 7;
+  let attempts = 10;
   attempts -= getNotInTheWord().length;
   return attempts;
 }
