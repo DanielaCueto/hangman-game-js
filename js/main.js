@@ -93,7 +93,7 @@ function displayNotInWord() {
   const notInTheWord = getNotInTheWord();
   document.querySelector(
     ".not-word"
-  ).innerHTML = `Is not in the word:  ${notInTheWord.join(", ")}`;
+  ).innerHTML = `No está en la palabra:  ${notInTheWord.join(", ")}`;
   const attempts = getAttemptsLeft();
   const displayAttempt = document.querySelector(".attempts");
   displayAttempt.innerHTML = `${attempts}`;
